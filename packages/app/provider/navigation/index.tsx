@@ -6,17 +6,17 @@ export function NavigationProvider({
   children,
 }: {
   children: React.ReactNode
-}) {
+  }) {
   return (
     <NavigationContainer
       linking={useMemo(
         () => ({
           prefixes: [Linking.createURL('/')],
           config: {
-            initialRouteName: 'home',
             screens: {
               home: '',
               'user-detail': 'user/:id',
+              'sign-in': 'sign-in',
             },
           },
         }),

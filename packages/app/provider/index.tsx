@@ -1,10 +1,16 @@
+import { DSAuthProvider } from './auth/ds-auth-provider'
 import { NavigationProvider } from './navigation'
 import { SafeArea } from './safe-area'
 
+const redirect_url = 'exp://7mn5d78.jason-e-cruz.19000.exp.direct:80/';
+
 export function Provider({ children }: { children: React.ReactNode }) {
   return (
-    <SafeArea>
-      <NavigationProvider>{children}</NavigationProvider>
-    </SafeArea>
+      <DSAuthProvider app_id='tv-s-sejutakgdatapassport' redirect_url={redirect_url}>
+        <SafeArea>
+          <NavigationProvider>{children}</NavigationProvider>
+        </SafeArea>
+      </DSAuthProvider>
+      
   )
 }

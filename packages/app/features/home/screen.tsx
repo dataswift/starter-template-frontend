@@ -3,8 +3,21 @@ import { Row } from 'app/design/layout'
 import { View } from 'app/design/view'
 
 import { MotiLink } from 'solito/moti'
+import { Pressable } from 'react-native';
+import { styled } from 'nativewind';
+import { useDSAuth } from 'app/provider/auth/ds-auth-provider';
+import { SplashScreen } from '../sign-in/splash-screen';
+
+const StyledPressable = styled(Pressable);
 
 export function HomeScreen() {
+
+  const { isLoading, isAuthenticated, logout } = useDSAuth();
+
+  if (isLoading) {
+    return (<SplashScreen />);
+  }
+  
   return (
     <View className="flex-1 items-center justify-center p-3">
       <H1>Welcome to Solito.</H1>
@@ -64,6 +77,10 @@ export function HomeScreen() {
           </Text>
         </MotiLink>
       </Row>
+      <Text className="mb-3 mt-6">{"Authenticated: " + isAuthenticated.toString()}</Text>
+      <StyledPressable className='bg-blue-700 rounded-lg text-sm px-5 py-2.5 mt-3 mb-6' onPress={logout}>
+        <Text className='text-white'>Sign out</Text>
+      </StyledPressable>
     </View>
   )
 }
