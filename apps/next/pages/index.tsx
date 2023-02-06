@@ -11,6 +11,8 @@ export function NextNavigation() {
     const router = useRouter();
     const { isLoading, isAuthenticated } = useDSAuth();
 
+    //to-do - fix routing, because if I navigate to user/fernando I'm not automatically redirected to the sign-in screen
+
     if (isLoading) {
         return <SplashScreen />;
     }

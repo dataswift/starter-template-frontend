@@ -5,6 +5,8 @@ export interface DSAuthContextProps {
     redirect_url: string;
     isAuthenticated: boolean;
     setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
+    isMobileLoading: boolean;
+    setIsMobileLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface DSAuthProviderProps {
@@ -14,6 +16,7 @@ export interface DSAuthProviderProps {
 }
 export interface DSAuthReturnProps {
     isLoading: boolean;
+    isMobileLoading: boolean;
     isAuthenticated: boolean;
     loginWithRedirect: () => void;
     signUpWithRedirect: () => void;

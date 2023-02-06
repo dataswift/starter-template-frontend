@@ -6,8 +6,6 @@ import { MotiLink } from 'solito/moti'
 import { Pressable } from 'react-native';
 import { styled } from 'nativewind';
 import { useDSAuth } from 'app/provider/auth/ds-auth-provider';
-import { SplashScreen } from '../sign-in/splash-screen';
-import { useEffect } from 'react';
 
 const StyledPressable = styled(Pressable);
 
