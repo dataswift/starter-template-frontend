@@ -1,10 +1,10 @@
 import React from "react";
 
 export interface DSAuthContextProps {
+    app_id: string;
+    redirect_url: string;
     isAuthenticated: boolean;
     setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
-    loginWithRedirect: () => void;
-    signUpWithRedirect: () => void;
 }
 
 export interface DSAuthProviderProps {

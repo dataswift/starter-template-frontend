@@ -1,3 +1,32 @@
 import { HomeScreen } from 'app/features/home/screen'
+import React from 'react';
 
-export default HomeScreen
+import { SignInScreen } from "app/features/sign-in/sign-in-screen";
+import { SplashScreen } from "app/features/sign-in/splash-screen";
+import { useDSAuth } from "app/provider/auth/ds-auth-provider";
+import { useRouter } from "next/router";
+import UserDetailScreen from './user/[id]';
+
+export function NextNavigation() {
+    const router = useRouter();
+    const { isLoading, isAuthenticated } = useDSAuth();
+
+    if (isLoading) {
+        return <SplashScreen />;
+    }
+    return (
+        <>
+        {isAuthenticated ? (
+            <>
+            <HomeScreen />
+            {router.pathname === '/user-detail' && <UserDetailScreen />}
+            </>
+        ) : (
+            <SignInScreen />
+        )}
+        </>
+    );
+}
+
+export default NextNavigation;
+

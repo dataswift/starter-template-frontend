@@ -2,7 +2,6 @@ import { H1, Text } from 'app/design/typography'
 import { View } from 'app/design/view'
 import { useDSAuth } from 'app/provider/auth/ds-auth-provider';
 import { styled } from 'nativewind'
-import { useEffect } from 'react';
 import { Pressable } from 'react-native'
 
 const StyledPressable = styled(Pressable);
@@ -10,10 +9,6 @@ const StyledPressable = styled(Pressable);
 export function SignInScreen() {
 
   const { isAuthenticated, loginWithRedirect, signUpWithRedirect } = useDSAuth();
-
-  useEffect(() => {
-    console.log("SignInScreen re-rendered");
-  },[])
 
   return (
     <View className="flex-1 items-center justify-center">

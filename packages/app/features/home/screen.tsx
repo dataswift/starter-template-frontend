@@ -13,15 +13,7 @@ const StyledPressable = styled(Pressable);
 
 export function HomeScreen() {
 
-  useEffect(() => {
-    console.log("HomeScreen component re-rendered");
-  },[]);
-
-  const { isLoading, isAuthenticated, logout } = useDSAuth();
-
-  if (isLoading) {
-    return (<SplashScreen />);
-  }
+  const { isAuthenticated, logout } = useDSAuth();
 
   return (
     <View className="flex-1 items-center justify-center p-3">
