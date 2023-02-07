@@ -1,51 +1,77 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { DSAuthProviderProps, DSAuthReturnProps } from "./ds-auth-interfaces";
+import { DSAuthContextProps, DSAuthProviderProps, DSAuthReturnProps } from "./ds-auth-interfaces";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Linking from "expo-linking";
-import * as WebBrowser from 'expo-web-browser';
+import * as WebBrowser from "expo-web-browser";
+import { Platform } from "react-native";
 
-export const DSAuthContext = createContext<DSAuthReturnProps>({
-    isLoading: false,
+export const DSAuthContext = createContext<DSAuthContextProps>({
+    app_id: "",
+    redirect_url: "",
     isAuthenticated: false,
-    loginWithRedirect: async (): Promise<void> => {},
-    signUpWithRedirect: async (): Promise<void> => {},
-    logout: async (): Promise<void> => {}
+    setIsAuthenticated: (value: boolean) => { },
+    isMobileLoading: false,
+    setIsMobileLoading: (value: boolean) => { },
 });
 
 export function useDSAuth(): DSAuthReturnProps {
-    return useContext(DSAuthContext);
-}
 
-export function DSAuthProvider({ app_id, redirect_url, children }: DSAuthProviderProps) {
-    const { isLoading,
-        isAuthenticated,
-        loginWithRedirect,
-        signUpWithRedirect,
-        logout
-    } = useProvideAuth(app_id, redirect_url);
-    return (<DSAuthContext.Provider value={{ isLoading, isAuthenticated, loginWithRedirect, signUpWithRedirect, logout }}>{children}</DSAuthContext.Provider>)
-}
+    const [isLoading, setIsLoading] = useState(true);
+    const { app_id, redirect_url, isAuthenticated, setIsAuthenticated, setIsMobileLoading } = useContext(DSAuthContext);
 
-export function useProvideAuth(app_id: string, redirect_url: string): DSAuthReturnProps { 
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const checkToken = async () => {
+            setIsLoading(true);
+            try {
+                const token = await AsyncStorage.getItem("access-token");
+                setIsAuthenticated(!!token);
+            } catch (error) {
+                console.error("Error retrieving token from async storage: ", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
+    useEffect(() => {
+        checkToken();
+    }, []);
 
     async function loginWithRedirect() {
+
         const loginWithRedirectURL = `https://hatters.dataswift.io/services/login?application_id=${app_id}&redirect_uri=${redirect_url}`
-        setIsLoading(true);
+        setIsMobileLoading(true);
         const result = await WebBrowser.openAuthSessionAsync(loginWithRedirectURL);
+
         if (result.type === 'dismiss' && !isAuthenticated) {
-            setIsLoading(false);
+            setIsMobileLoading(false);
         }
+                    
+        if (result.type === 'success') {
+            const urlParams = new URLSearchParams(new URL(result.url).search);
+            const token = urlParams.get('token');
+            if (token) {
+                await AsyncStorage.setItem("access-token", token);
+                setIsAuthenticated(true);
+            }
+        }
+
     }
 
     async function signUpWithRedirect() {
         const loginWithRedirectURL = `https://hatters.dataswift.io/services/signup?application_id=${app_id}&redirect_uri=${redirect_url}`
-        setIsLoading(true);
+        setIsMobileLoading(true);
         const result = await WebBrowser.openAuthSessionAsync(loginWithRedirectURL);
+
         if (result.type === 'dismiss' && !isAuthenticated) {
-            setIsLoading(false);
+            setIsMobileLoading(false);
+        }
+        
+        if (result.type === 'success') {
+            const urlParams = new URLSearchParams(new URL(result.url).search);
+            const token = urlParams.get('token');
+            if (token) {
+                await AsyncStorage.setItem("access-token", token);
+                setIsAuthenticated(true);
+            }
         }
     }
 
@@ -58,31 +84,40 @@ export function useProvideAuth(app_id: string, redirect_url: string): DSAuthRetu
         }
     }
 
+    async function getToken(): Promise<string | null> {
+        try {
+            const value = await AsyncStorage.getItem("access-token");
+            if (value !== null) {
+                return value;
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error("Error fetching token from async storage: ", error);
+        return null;
+        }
+    }
 
-    //below useEffect hook not necessary for Expo app
-    // useEffect(() => {
-        
-    //     async function checkToken() {
-    //         setIsLoading(true);
-    //         try {
-    //             const token = await AsyncStorage.getItem("access-token");
-    //             if (token) {
-    //                 setIsAuthenticated(true);
-                    
-    //             } else {
-    //                 setIsAuthenticated(false);
-    //             }
-    //         }
-    //         catch (error) {
-    //             console.error("Error retrieving token from async storage: ", error);
-    //         } finally {
-    //             setIsLoading(false);
-    //         }
-    //     }
-    //     checkToken();
-    // }, []);
+    return {
+        isLoading,
+        isAuthenticated: useContext(DSAuthContext).isAuthenticated,
+        loginWithRedirect,
+        signUpWithRedirect,
+        logout,
+        isMobileLoading: useContext(DSAuthContext).isMobileLoading,
+        getToken
+    };
+}
 
-    Linking.addEventListener('url', (event) => {
+export function DSAuthProvider({ app_id, redirect_url, children }: DSAuthProviderProps) {
+
+    WebBrowser.maybeCompleteAuthSession({ skipRedirectCheck: true });
+
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isMobileLoading, setIsMobileLoading] = useState(false);
+
+    if (Platform.OS === "ios" || Platform.OS === "android") {
+        Linking.addEventListener('url', (event) => {
         const { url } = event;
 
         // Parse the URL to get the token
@@ -90,22 +125,17 @@ export function useProvideAuth(app_id: string, redirect_url: string): DSAuthRetu
 
         // Store the token in async storage
         if (token) {
-            setIsLoading(true);
+            setIsMobileLoading(true);
             AsyncStorage.setItem("access-token", token)
                 .then(() => {
                     setIsAuthenticated(true);
                 }).then(() => {
-                    setIsLoading(false);
+                    setIsMobileLoading(false);
                 })
           .catch((error) => console.error(error));
         }      
-    });
-
-    return {
-        isLoading,
-        isAuthenticated,
-        loginWithRedirect,
-        signUpWithRedirect,
-        logout,
+        });
     }
+    
+    return (<DSAuthContext.Provider value={{app_id, redirect_url, isAuthenticated, setIsAuthenticated, isMobileLoading, setIsMobileLoading}}>{children}</DSAuthContext.Provider>)
 }

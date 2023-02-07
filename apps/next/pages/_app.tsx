@@ -17,6 +17,7 @@ import React from 'react'
 
 import '../global.css'
 import { AppProps } from 'next/app'
+import RouteGuard from '../components/route-guard/route-guard'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -30,7 +31,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Provider>
-        <Component {...pageProps} />
+        <RouteGuard publicPaths={[]}>
+          <Component {...pageProps} />
+        </RouteGuard>
       </Provider>
     </>
   )

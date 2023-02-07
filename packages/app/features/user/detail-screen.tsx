@@ -3,7 +3,6 @@ import { TextLink } from 'solito/link'
 import { Text } from 'app/design/typography'
 import { View } from 'app/design/view'
 import { useDSAuth } from 'app/provider/auth/ds-auth-provider'
-import { SplashScreen } from '../sign-in/splash-screen'
 
 const { useParam } = createParam<{ id: string }>()
 

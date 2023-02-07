@@ -16,7 +16,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>()
 
 export function NativeNavigation() {
 
-  const { isLoading, isAuthenticated } = useDSAuth();
+  const { isMobileLoading, isAuthenticated } = useDSAuth();
 
   const AuthenticatedNavigator = 
   (
@@ -45,8 +45,7 @@ export function NativeNavigation() {
           }} />
       </Stack.Navigator>)
 
-  
-  if (isLoading) {
+  if (isMobileLoading) {
     return <SplashScreen />;
   }
 

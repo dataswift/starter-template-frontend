@@ -6,18 +6,13 @@ import { MotiLink } from 'solito/moti'
 import { Pressable } from 'react-native';
 import { styled } from 'nativewind';
 import { useDSAuth } from 'app/provider/auth/ds-auth-provider';
-import { SplashScreen } from '../sign-in/splash-screen';
 
 const StyledPressable = styled(Pressable);
 
 export function HomeScreen() {
 
-  const { isLoading, isAuthenticated, logout } = useDSAuth();
+  const { isAuthenticated, logout } = useDSAuth();
 
-  if (isLoading) {
-    return (<SplashScreen />);
-  }
-  
   return (
     <View className="flex-1 items-center justify-center p-3">
       <H1>Welcome to Solito.</H1>
