@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { DSAuthContextProps, DSAuthProviderProps, DSAuthReturnProps, DSProvideAuthProps } from "./ds-auth-interfaces";
+import { DSAuthContextProps, DSAuthProviderProps, DSAuthReturnProps } from "./ds-auth-interfaces";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
@@ -17,7 +17,7 @@ export const DSAuthContext = createContext<DSAuthContextProps>({
 export function useDSAuth(): DSAuthReturnProps {
 
     const [isLoading, setIsLoading] = useState(true);
-    const { app_id, redirect_url, isAuthenticated, setIsAuthenticated, isMobileLoading, setIsMobileLoading } = useContext(DSAuthContext);
+    const { app_id, redirect_url, isAuthenticated, setIsAuthenticated, setIsMobileLoading } = useContext(DSAuthContext);
 
     const checkToken = async () => {
             setIsLoading(true);
@@ -84,6 +84,20 @@ export function useDSAuth(): DSAuthReturnProps {
         }
     }
 
+    async function getToken(): Promise<string | null> {
+        try {
+            const value = await AsyncStorage.getItem("access-token");
+            if (value !== null) {
+                return value;
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error("Error fetching token from async storage: ", error);
+        return null;
+        }
+    }
+
     return {
         isLoading,
         isAuthenticated: useContext(DSAuthContext).isAuthenticated,
@@ -91,6 +105,7 @@ export function useDSAuth(): DSAuthReturnProps {
         signUpWithRedirect,
         logout,
         isMobileLoading: useContext(DSAuthContext).isMobileLoading,
+        getToken
     };
 }
 

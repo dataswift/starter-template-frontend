@@ -21,9 +21,5 @@ export interface DSAuthReturnProps {
     loginWithRedirect: () => void;
     signUpWithRedirect: () => void;
     logout: () => void;
-}
-
-export interface DSProvideAuthProps {
-    loginWithRedirect: () => void;
-    signUpWithRedirect: () => void;
+    getToken: () => Promise<string | null>;
 }
