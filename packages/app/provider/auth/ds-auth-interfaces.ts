@@ -23,3 +23,13 @@ export interface DSAuthReturnProps {
     logout: () => void;
     getToken: () => Promise<string | null>;
 }
+
+export interface DecodedJWT {
+    applicationVersion: string;
+    sub: string;
+    application: string;
+    iss: string;
+    exp: number;
+    iat: number;
+    jti: string;
+}
