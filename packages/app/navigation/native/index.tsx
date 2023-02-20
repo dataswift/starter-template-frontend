@@ -1,4 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { CustomHomeScreen } from 'app/features/home/custom-home-screen';
 import { SignInScreen } from 'app/features/sign-in/sign-in-screen';
 import { SplashScreen } from 'app/features/sign-in/splash-screen';
 import { useDSAuth } from 'app/provider/auth/ds-auth-provider';

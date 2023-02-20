@@ -2,10 +2,15 @@ import { useDSAuth } from 'app/provider/auth/ds-auth-provider';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { SplashScreen } from 'app/features/sign-in/splash-screen';
+import { Text } from 'app/design/typography';
 
 interface RouteGuardProps {
   children: React.ReactNode;
   publicPaths?: string[];
+}
+
+function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 const RouteGuard: React.FC<RouteGuardProps> = ({ children, publicPaths = [] }) => {
@@ -20,8 +25,12 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children, publicPaths = [] }) =
 
     //if not authenticated, redirect to sign-in page
     if (!isLoading && !isAuthenticated) {
+     const redirect = async () => {
+      await delay(2000); // Change the delay time as per your preference
       router.push('/sign-in');
-      return;
+    };
+    redirect();
+    return;
     }
       
     //redirect to home from sign-in
@@ -36,7 +45,11 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children, publicPaths = [] }) =
     return <SplashScreen />
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+    </>
+  );
 };
 
 export default RouteGuard;

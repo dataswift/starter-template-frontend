@@ -16,7 +16,7 @@ PDAClient.interceptors.request.use(async config => {
       config.url = `https://${issuer}/api/v2.6/data`;
     } else {
       config.url = `https://${issuer}/api/v2.6/data/${namespace}/${config.url}`;
-    }
+    } 
 
     config.headers.Accept = 'application/json';
     config.headers['Content-Type'] = 'application/json';
