@@ -3,23 +3,31 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { SplashScreen } from 'app/features/sign-in/splash-screen';
 import NavigationScaffold from '../navigation/navigation-scaffold';
+import { PageList } from '../navigation/page-list';
 
 interface RouteGuardProps {
   children: React.ReactNode;
-  publicPaths?: string[];
 }
 
 function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const RouteGuard: React.FC<RouteGuardProps> = ({ children, publicPaths = [] }) => {
+const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
   const router = useRouter();
   const { pathname } = router;
   const { isLoading, isAuthenticated } = useDSAuth();
 
+  const publicPageHrefs = PageList.filter(page => !page.private).map(page => page.href);
+
   useEffect(() => {
-    if (publicPaths.includes(pathname)) {
+    if (publicPageHrefs.includes(pathname) && pathname !== "/sign-in") {
+      return;
+    }
+
+     //redirect to home from sign-in
+    if (!isLoading && isAuthenticated && pathname === "/sign-in") {
+      router.push("/");
       return;
     }
 
@@ -33,11 +41,7 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children, publicPaths = [] }) =
     return;
     }
       
-    //redirect to home from sign-in
-    if (!isLoading && isAuthenticated && pathname === "/sign-in") {
-      router.push("/");
-      return;
-    }
+   
 
   }, [isAuthenticated, isLoading, pathname]);
     

@@ -34,6 +34,7 @@ export function TodoList() {
     try {
 
       const todo = await addTodo(false, newTodo);
+      delete todo.data.links;
       setTodos([...todos, todo.data]);
     } catch (error) {
       setError(error);

@@ -5,6 +5,7 @@ import Axios, { AxiosResponse } from "axios";
 export interface TodoResponse {
   endpoint: string;
   recordId: string;
+  links?: [];
   data: TodoData;
 }
 
