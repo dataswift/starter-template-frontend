@@ -17,13 +17,13 @@ import React from 'react'
 
 import '../global.css'
 import { AppProps } from 'next/app'
-import RouteGuard from '../components/route-management/route-guard'
+import RouteGuard from '../components/route-guard/route-guard'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Dataswift Starter App</title>
+        <title>Solito Example App</title>
         <meta
           name="description"
           content="Expo + Next.js with Solito. By Fernando Rojo."
@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Provider>
-        <RouteGuard publicPaths={['one', 'two', 'three']}>
+        <RouteGuard publicPaths={[]}>
           <Component {...pageProps} />
         </RouteGuard>
       </Provider>

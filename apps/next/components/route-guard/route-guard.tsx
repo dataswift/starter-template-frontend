@@ -2,7 +2,7 @@ import { useDSAuth } from 'app/provider/auth/ds-auth-provider';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { SplashScreen } from 'app/features/sign-in/splash-screen';
-import { Text } from 'app/design/typography';
+import { NavigationScaffold } from '../navigation/navigation-scaffold';
 
 interface RouteGuardProps {
   children: React.ReactNode;
@@ -26,7 +26,7 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children, publicPaths = [] }) =
     //if not authenticated, redirect to sign-in page
     if (!isLoading && !isAuthenticated) {
      const redirect = async () => {
-      await delay(2000); // Change the delay time as per your preference
+      await delay(2000); // Delay induced for testing purposes
       router.push('/sign-in');
     };
     redirect();
@@ -47,7 +47,9 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children, publicPaths = [] }) =
 
   return (
     <>
-      {children}
+      <NavigationScaffold>
+        {children}
+      </NavigationScaffold>
     </>
   );
 };

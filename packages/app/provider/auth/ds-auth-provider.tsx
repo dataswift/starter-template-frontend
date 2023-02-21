@@ -115,7 +115,7 @@ export function useDSAuth(): DSAuthReturnProps {
 
 export function DSAuthProvider({ app_id, redirect_url, children }: DSAuthProviderProps) {
 
-    WebBrowser.maybeCompleteAuthSession();
+    WebBrowser.maybeCompleteAuthSession({ skipRedirectCheck: true });
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isMobileLoading, setIsMobileLoading] = useState(false);
