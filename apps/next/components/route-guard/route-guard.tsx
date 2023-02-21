@@ -2,7 +2,7 @@ import { useDSAuth } from 'app/provider/auth/ds-auth-provider';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { SplashScreen } from 'app/features/sign-in/splash-screen';
-import { NavigationScaffold } from '../navigation/navigation-scaffold';
+import NavigationScaffold from '../navigation/navigation-scaffold';
 
 interface RouteGuardProps {
   children: React.ReactNode;

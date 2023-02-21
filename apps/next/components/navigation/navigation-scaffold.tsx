@@ -3,19 +3,9 @@ import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { PageList } from './page-list'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
-import path from 'path'
-import { json } from 'stream/consumers'
+import Link from 'next/link'
 import { useDSAuth } from 'app/provider/auth/ds-auth-provider'
-
-interface NavigationScaffoldProps {
-    children?: React.ReactNode
-}
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
 
 const user = {
   name: 'Tom Cook',
@@ -24,33 +14,52 @@ const user = {
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
 
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(' ')
+}
 
+export interface NavigationScaffoldProps {
+  children?: React.ReactNode
+}
 
-export function NavigationScaffold({ children }: NavigationScaffoldProps) {
+const profileDropdownList = ['Settings']
 
-    const { logout } = useDSAuth()
+export default function NavigationScaffold({ children }: NavigationScaffoldProps) {
 
-  const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
-]
+  const { logout } = useDSAuth();
 
-    const router = useRouter();
-    const { pathname } = router;
-    
-  const currentPage = PageList.filter(item => item.href === pathname)[0]
-  
-  if (!currentPage) {
+  const router = useRouter();
+  const pathname = router.asPath;
+
+  const currentPage = PageList.find(item => item.href === pathname) ?? null;
+
+  const shouldShowScaffold = currentPage?.showScaffold === true;
+
+  const navbarItems = PageList.filter(page => (page.shouldShowInNavbar) === true);
+  const pagesInProfileDropdown = PageList.filter(page => profileDropdownList.includes(page.title)).map(page => ({
+    title: page.title, onClick: (event: React.MouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+      router.push(page.href)
+    }
+  }));
+  const profileDropdownItems = pagesInProfileDropdown.concat({
+    title: "Sign out",
+    onClick: (event: React.MouseEvent<HTMLAnchorElement>) => new Promise<boolean>((resolve) => {
+      event.preventDefault();
+      logout();
+      resolve(false);
+  }),
+  })
+
+  if (!shouldShowScaffold) {
     return (
       <>
         {children}
       </>
-      
     )
   }
 
-      return (
+  return (
     <>
       {/*
         This example requires updating your template:
@@ -78,17 +87,17 @@ export function NavigationScaffold({ children }: NavigationScaffoldProps) {
                         </div>
                         <div className="hidden md:block">
                           <div className="ml-10 flex items-baseline space-x-4">
-                            {PageList.filter(item => item.showScaffold).map((item) => (
+                            {navbarItems.map((item) => (
                               <Link
                                 key={item.title}
                                 href={item.href}
                                 className={classNames(
-                                  currentPage
+                                  (item.href === pathname)
                                     ? 'bg-gray-900 text-white'
                                     : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                                   'px-3 py-2 rounded-md text-sm font-medium'
                                 )}
-                                aria-current={currentPage ? 'page' : undefined}
+                                aria-current={(item.href === pathname) ? 'page' : undefined}
                               >
                                 {item.title}
                               </Link>
@@ -124,18 +133,20 @@ export function NavigationScaffold({ children }: NavigationScaffoldProps) {
                               leaveTo="transform opacity-0 scale-95"
                             >
                               <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                {userNavigation.map((item) => (
-                                  <Menu.Item key={item.name}>
+                                {profileDropdownItems.map((item) => (
+                                  <Menu.Item key={item.title}>
                                     {({ active }) => (
                                       <a
-                                        href={item.href}
+                                        href="#"
                                         className={classNames(
                                           active ? 'bg-gray-100' : '',
                                           'block px-4 py-2 text-sm text-gray-700'
                                         )}
+                                        onClick={item.onClick}
                                       >
-                                        {item.name}
+                                        {item.title}
                                       </a>
+                                      
                                     )}
                                   </Menu.Item>
                                 ))}
@@ -161,19 +172,18 @@ export function NavigationScaffold({ children }: NavigationScaffoldProps) {
 
                 <Disclosure.Panel className="border-b border-gray-700 md:hidden">
                   <div className="space-y-1 px-2 py-3 sm:px-3">
-                    {PageList.filter(item => item.href === pathname).map((item) => (
-                      <Disclosure.Button
+                    {navbarItems.map((item) => (
+                      <Link
                         key={item.title}
-                        as="a"
                         href={item.href}
                         className={classNames(
-                          currentPage ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          (item.href === pathname) ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                           'block px-3 py-2 rounded-md text-base font-medium'
                         )}
-                        aria-current={currentPage ? 'page' : undefined}
+                        aria-current={(item.href === pathname) ? 'page' : undefined}
                       >
                         {item.title}
-                      </Disclosure.Button>
+                      </Link>
                     ))}
                   </div>
                   <div className="border-t border-gray-700 pt-4 pb-3">
@@ -194,14 +204,15 @@ export function NavigationScaffold({ children }: NavigationScaffoldProps) {
                       </button>
                     </div>
                     <div className="mt-3 space-y-1 px-2">
-                      {userNavigation.map((item) => (
+                      {profileDropdownItems.map((item) => (
                         <Disclosure.Button
-                          key={item.name}
+                          key={item.title}
                           as="a"
-                          href={item.href}
+                          href='#'
                           className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                          onClick={item.onClick}
                         >
-                          {item.name}
+                          {item.title}
                         </Disclosure.Button>
                       ))}
                     </div>
@@ -221,9 +232,9 @@ export function NavigationScaffold({ children }: NavigationScaffoldProps) {
           <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
             {/* Replace with your content */}
             <div className="rounded-lg bg-white px-5 py-6 shadow sm:px-6">
-                <div className="h-96 rounded-lg border-4 border-dashed border-gray-200">
-                        {children}
-                </div>
+              <div className="rounded-lg border-4 border-dashed border-gray-200">
+                {children}
+              </div>
             </div>
             {/* /End replace */}
           </div>
