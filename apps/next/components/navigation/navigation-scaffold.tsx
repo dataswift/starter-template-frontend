@@ -42,8 +42,6 @@ export default function NavigationScaffold({ children }: NavigationScaffoldProps
     }
   }));
 
-  console.log(pagesInProfileDropdown);
-
   const profileDropdownItems = pagesInProfileDropdown.concat({
     title: "Sign out",
     onClick: (event: React.MouseEvent<HTMLAnchorElement>) => new Promise<boolean>((resolve) => {
