@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { DSAuthContextProps, DSAuthProviderProps, DSAuthReturnProps, DSProvideAuthProps } from "./ds-auth-interfaces";
+import { DecodedJWT, DSAuthContextProps, DSAuthProviderProps, DSAuthReturnProps } from "./ds-auth-interfaces";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import { Platform } from "react-native";
+import jwt_decode from "jwt-decode";
 
 export const DSAuthContext = createContext<DSAuthContextProps>({
     app_id: "",
@@ -17,7 +18,7 @@ export const DSAuthContext = createContext<DSAuthContextProps>({
 export function useDSAuth(): DSAuthReturnProps {
 
     const [isLoading, setIsLoading] = useState(true);
-    const { app_id, redirect_url, isAuthenticated, setIsAuthenticated, isMobileLoading, setIsMobileLoading } = useContext(DSAuthContext);
+    const { app_id, redirect_url, isAuthenticated, setIsAuthenticated, setIsMobileLoading } = useContext(DSAuthContext);
 
     const checkToken = async () => {
             setIsLoading(true);
@@ -50,6 +51,8 @@ export function useDSAuth(): DSAuthReturnProps {
             const token = urlParams.get('token');
             if (token) {
                 await AsyncStorage.setItem("access-token", token);
+                const decoded_token: DecodedJWT = jwt_decode(token);
+                await AsyncStorage.setItem("issuer", decoded_token.iss);
                 setIsAuthenticated(true);
             }
         }
@@ -70,6 +73,7 @@ export function useDSAuth(): DSAuthReturnProps {
             const token = urlParams.get('token');
             if (token) {
                 await AsyncStorage.setItem("access-token", token);
+                const decoded_token: DecodedJWT = jwt_decode(token);
                 setIsAuthenticated(true);
             }
         }
@@ -84,6 +88,20 @@ export function useDSAuth(): DSAuthReturnProps {
         }
     }
 
+    async function getToken(): Promise<string | null> {
+        try {
+            const value = await AsyncStorage.getItem("access-token");
+            if (value !== null) {
+                return value;
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error("Error fetching token from async storage: ", error);
+        return null;
+        }
+    }
+
     return {
         isLoading,
         isAuthenticated: useContext(DSAuthContext).isAuthenticated,
@@ -91,12 +109,13 @@ export function useDSAuth(): DSAuthReturnProps {
         signUpWithRedirect,
         logout,
         isMobileLoading: useContext(DSAuthContext).isMobileLoading,
+        getToken,
     };
 }
 
 export function DSAuthProvider({ app_id, redirect_url, children }: DSAuthProviderProps) {
 
-    WebBrowser.maybeCompleteAuthSession({ skipRedirectCheck: true });
+    WebBrowser.maybeCompleteAuthSession();
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isMobileLoading, setIsMobileLoading] = useState(false);
@@ -114,6 +133,8 @@ export function DSAuthProvider({ app_id, redirect_url, children }: DSAuthProvide
             AsyncStorage.setItem("access-token", token)
                 .then(() => {
                     setIsAuthenticated(true);
+                    const decoded_token: DecodedJWT = jwt_decode(token);
+                    AsyncStorage.setItem(decoded_token.iss, "issuer");
                 }).then(() => {
                     setIsMobileLoading(false);
                 })

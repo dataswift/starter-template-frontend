@@ -1,0 +1,1 @@
+export { TodoList as default } from 'app/features/to-do-list/to-do-list'

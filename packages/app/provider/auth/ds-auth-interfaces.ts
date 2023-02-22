@@ -21,9 +21,15 @@ export interface DSAuthReturnProps {
     loginWithRedirect: () => void;
     signUpWithRedirect: () => void;
     logout: () => void;
+    getToken: () => Promise<string | null>;
 }
 
-export interface DSProvideAuthProps {
-    loginWithRedirect: () => void;
-    signUpWithRedirect: () => void;
+export interface DecodedJWT {
+    applicationVersion: string;
+    sub: string;
+    application: string;
+    iss: string;
+    exp: number;
+    iat: number;
+    jti: string;
 }

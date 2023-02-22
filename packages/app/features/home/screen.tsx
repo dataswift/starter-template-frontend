@@ -3,9 +3,11 @@ import { Row } from 'app/design/layout'
 import { View } from 'app/design/view'
 
 import { MotiLink } from 'solito/moti'
-import { Pressable } from 'react-native';
+import { Pressable, TextInput } from 'react-native';
 import { styled } from 'nativewind';
 import { useDSAuth } from 'app/provider/auth/ds-auth-provider';
+import { useEffect, useState } from 'react';
+import { addTodo, deleteAllTodos, getTodos, TodoResponse, updateTodos } from 'app/pda/pda';
 
 const StyledPressable = styled(Pressable);
 
@@ -73,9 +75,11 @@ export function HomeScreen() {
         </MotiLink>
       </Row>
       <Text className="mb-3 mt-6">{"Authenticated: " + isAuthenticated.toString()}</Text>
-      <StyledPressable className='bg-blue-700 rounded-lg text-sm px-5 py-2.5 mt-3 mb-6' onPress={logout}>
+      <StyledPressable className='bg-blue-700 rounded-lg text-sm px-5 py-2.5 mt-3 mb-3' onPress={logout}>
         <Text className='text-white'>Sign out</Text>
       </StyledPressable>
+      <View>
+      </View>
     </View>
   )
 }
