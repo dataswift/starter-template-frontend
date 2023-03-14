@@ -7,7 +7,7 @@ const redirect_url = 'http://localhost:3000';
   
 export function Provider({ children }: { children: React.ReactNode }) {
   return (
-      <DSAuthProvider app_id='tv-s-sejutakgdatapassport' redirect_url={redirect_url}>
+      <DSAuthProvider app_id='hatappstaging' redirect_url={redirect_url}>
         <SafeArea>
           <NavigationProvider>{children}</NavigationProvider>
         </SafeArea>
