@@ -8,7 +8,7 @@ Solito based starter template for Data Ecosytems
 - Next.js 13
 - React Navigation 6
 
-## 🗂 Folder layout
+## Folder layout
 
 - `apps` entry points for each app
 
