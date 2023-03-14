@@ -7,6 +7,7 @@ import { PageList } from '../navigation/page-list';
 
 interface RouteGuardProps {
   children: React.ReactNode;
+  publicPaths?: string[];
 }
 
 function delay(ms: number) {
