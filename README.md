@@ -23,7 +23,7 @@ Solito based starter template for Data Ecosytems
 
 You can add other folders inside of `packages/` if you know what you're doing and have a good reason to.
 
-## 🏁 Start the app
+## Start the app
 
 - Install dependencies: `yarn`
 
